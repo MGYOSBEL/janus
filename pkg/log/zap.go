@@ -6,13 +6,15 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-const logLevel zapcore.Level = zapcore.DebugLevel
-
 type zapLogger struct {
-	logger zap.SugaredLogger
+	logger *zap.SugaredLogger
 }
 
-func NewZapLogger() Logger {
+func NewZapLogger(logLevel string) Logger {
+	level, err := zapcore.ParseLevel(logLevel)
+	if err != nil {
+		level = zapcore.DebugLevel
+	}
 	config := zap.NewProductionEncoderConfig()
 	config.EncodeLevel = zapcore.CapitalColorLevelEncoder
 	config.TimeKey = "time"
@@ -21,15 +23,37 @@ func NewZapLogger() Logger {
 	logger := zap.New(zapcore.NewCore(
 		zapcore.NewConsoleEncoder(config),
 		zapcore.AddSync(colorable.NewColorableStdout()),
-		logLevel,
+		level,
 	))
-	return logger.Sugar()
+	return &zapLogger{
+		logger: logger.Sugar(),
+	}
 }
 
 func (l *zapLogger) Close() {
 	l.logger.Sync()
 }
 
+func (l *zapLogger) Panicf(message string, args ...interface{}) {
+	l.logger.Panicf(message, args...)
+}
+
 func (l *zapLogger) Fatalf(message string, args ...interface{}) {
 	l.logger.Fatalf(message, args...)
+}
+
+func (l *zapLogger) Errorf(message string, args ...interface{}) {
+	l.logger.Errorf(message, args...)
+}
+
+func (l *zapLogger) Warnf(message string, args ...interface{}) {
+	l.logger.Warnf(message, args...)
+}
+
+func (l *zapLogger) Infof(message string, args ...interface{}) {
+	l.logger.Infof(message, args...)
+}
+
+func (l *zapLogger) Debugf(message string, args ...interface{}) {
+	l.logger.Debugf(message, args...)
 }
