@@ -1,7 +1,7 @@
 // Copyright (c) 2021, CELSA Group All rights reserved.
 // Author: Albert Espín <
 // Contributors:
-package backend
+package mqtt
 
 import (
 	"crypto/tls"
