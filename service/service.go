@@ -44,7 +44,7 @@ func Run() {
 	logger.Infof("receiving data from MQTT")
 	go func() {
 		for data := range mqttChannel {
-			logger.Debugf(string(data.Payload()))
+			logger.Debugf(string(data))
 		}
 	}()
 

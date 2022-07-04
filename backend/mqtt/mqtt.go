@@ -153,10 +153,10 @@ func (c *MQTT) subscribe(topic string, handler paho.MessageHandler, cancel func(
 }
 
 // SubscribeTopic subscribes to telemetry messages
-func (c *MQTT) SubscribeTopic() (<-chan paho.Message, error) {
-	messages := make(chan paho.Message, BufferSize)
+func (c *MQTT) SubscribeTopic() (<-chan []byte, error) {
+	messages := make(chan []byte, BufferSize)
 	token := c.subscribe(c.cfg.Topic, func(_ paho.Client, msg paho.Message) {
-		messages <- msg
+		messages <- msg.Payload()
 	}, func() {
 		close(messages)
 	})
